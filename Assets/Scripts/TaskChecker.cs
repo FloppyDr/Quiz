@@ -14,18 +14,28 @@ public class TaskChecker : MonoBehaviour
         _taskGenerator = GetComponent<TaskGenerator>();
     }
 
-    public void CheckAnswer(string answer)
+    public void CheckAnswer(string answer, Cell cell)
     {
         _curretTask = _taskGenerator.Task;
 
         if (answer == _curretTask)
         {
-            _spawner.ChangeDifficulty();
+            cell.SequenceEnded += OnSequenceEnded;
+            cell.Correct();
+           
+           
         }
         else
         {
+            cell.Incorrect();
             return;
         }
+    }
+
+    private void OnSequenceEnded(Cell cell)
+    {
+        _spawner.ChangeLevel();
+        cell.SequenceEnded -= OnSequenceEnded;
     }
 }
 

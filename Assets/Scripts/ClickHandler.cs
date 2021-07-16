@@ -10,11 +10,9 @@ public class ClickHandler : MonoBehaviour, IPointerClickHandler
     {
        Cell cell = eventData.pointerCurrentRaycast.gameObject.GetComponent<Cell>();
 
-        _checker.CheckAnswer(cell.Name);
+        _checker.CheckAnswer(cell.Name, cell);
 
     }
-
-
 
     private void Awake()
     {

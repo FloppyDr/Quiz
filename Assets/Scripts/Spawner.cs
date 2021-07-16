@@ -6,120 +6,83 @@ using UnityEngine.Events;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private SpTest _test;
+    [SerializeField] private Storage _data;
     [SerializeField] private int _dataBorder;
     [SerializeField] private Cell _prefub;
     [SerializeField] private Transform _container;
-    [SerializeField] private List<Transform> _spawnpoints;
-    [Range(0, 2)]
-    private int _difficulty = 0;
+    [SerializeField] private List<Transform> _spawnpointsEasy;
+    [SerializeField] private List<Transform> _spawnpointsMedium;
+    [SerializeField] private List<Transform> _spawnpointsHard;
+    [SerializeField] private RestartLevel _restartLevel;
 
+    private int _level = 0;
     private List<Cell> _spawned = new List<Cell>();
     private List<int> _curretData = new List<int>();
 
-
     public event UnityAction<List<Cell>> Spawned;
+    public event UnityAction LevelsEnded;
 
     private void Start()
     {
-        if (Random.Range(0, 2) % 2 == 0)
-        {
-            for (int i = 0; i <= _dataBorder; i++)
-            {
-                _curretData.Add(i);
-            }
-        }
-        else
-        {
-            for (int i = _dataBorder + 1; i < _test.Images.Count; i++)
-            {
-                _curretData.Add(i);
-            }
-        }
-
+        Reset();
         Spawn();
         Spawned?.Invoke(_spawned);
     }
 
     private void Spawn()
     {
-        int spawnpointsCount = 0;
+        List<Transform> curretSpawnpoints = new List<Transform>();
 
-        switch (_difficulty)
+        switch (_level)
         {
             case 0:
-                spawnpointsCount = 3;
+                curretSpawnpoints = _spawnpointsEasy;
                 break;
             case 1:
-                spawnpointsCount = 6;
+                curretSpawnpoints = _spawnpointsMedium;
                 break;
             case 2:
-                spawnpointsCount = 9;
+                curretSpawnpoints = _spawnpointsHard;
                 break;
 
             default:
                 break;
         }
-        for (int i = 0; i < spawnpointsCount; i++)
+
+        for (int i = 0; i < curretSpawnpoints.Count; i++)
         {
             int index = _curretData[Random.Range(0, _curretData.Count)];
 
-            KeyValuePair<string, Sprite> pair = _test.Images.ElementAt(index);
+            KeyValuePair<string, Sprite> pair = _data.Images.ElementAt(index);
 
             _curretData.Remove(index);
 
-            var spawned = Instantiate(_prefub, _spawnpoints[i].transform.position, Quaternion.identity, _container);
+            var spawned = Instantiate(_prefub, curretSpawnpoints[i].transform.position, Quaternion.identity, _container);
             _spawned.Add(spawned);
             spawned.Init(pair.Key, pair.Value);
+            if (_level == 0)
+            {
+                spawned.ShowAnimation();
+            }
+
         }
 
-        _difficulty++;
-        if (_difficulty > 2)
+        if (_level > 2)
         {
-            _difficulty = 0;
+            _level = 0;
+            LevelsEnded?.Invoke();
         }
-    }
+        _level++;
+    }  
 
-    private void Update()
+    private void Reset()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            for (int i = 0; i < _spawned.Count; i++)
-            {
-                _spawned[i].Die();
-            }
-            _spawned.Clear();
-            _curretData.Clear();
-
-            if (Random.Range(0, 2) % 2 == 0)
-            {
-                for (int i = 0; i <= _dataBorder; i++)
-                {
-                    _curretData.Add(i);
-                }
-            }
-            else
-            {
-                for (int i = _dataBorder + 1; i < _test.Images.Count; i++)
-                {
-                    _curretData.Add(i);
-                }
-            }
-
-            Spawn();
-            Spawned?.Invoke(_spawned);
-        }
-    }
-
-    public void ChangeDifficulty()
-    {
-
         for (int i = 0; i < _spawned.Count; i++)
         {
             _spawned[i].Die();
         }
-        _spawned.Clear();
 
+        _spawned.Clear();
         _curretData.Clear();
         if (Random.Range(0, 2) % 2 == 0)
         {
@@ -130,11 +93,18 @@ public class Spawner : MonoBehaviour
         }
         else
         {
-            for (int i = _dataBorder + 1; i < _test.Images.Count; i++)
+            for (int i = _dataBorder + 1; i < _data.Images.Count; i++)
             {
                 _curretData.Add(i);
             }
         }
+
+       
+    }
+
+    public void ChangeLevel()
+    {
+        Reset();
 
         Spawn();
         Spawned?.Invoke(_spawned);

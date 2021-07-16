@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class SpTest : MonoBehaviour
+public class Storage : MonoBehaviour
 {
-    
     [SerializeField] private List<Sprite> _sprites;
     [SerializeField] private List<string> _names;
     [SerializeField] private Dictionary<string, Sprite> _images = new Dictionary<string, Sprite>();
