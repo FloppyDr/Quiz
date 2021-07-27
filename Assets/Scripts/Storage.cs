@@ -1,40 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
 public class Storage : MonoBehaviour
 {
-    [SerializeField] private List<Sprite> _sprites;
-    [SerializeField] private List<string> _names;
-    [SerializeField] private Dictionary<string, Sprite> _images = new Dictionary<string, Sprite>();
+    [SerializeField] private CardData[] _data;
 
-    private SpriteRenderer _spriteRenderer;
+    private List<Dictionary<string, Sprite>> _cardsData = new List<Dictionary<string, Sprite>>();
 
-    public Dictionary<string, Sprite> Images => _images;
+    public List<Dictionary<string, Sprite>> CardsData => _cardsData;
 
     private void Awake()
     {
-        for (int i = 0; i < _names.Count; i++)
+        for (int i = 0; i < _data.Count(); i++)
         {
-            _images.Add(_names[i], _sprites[i]);
-        }
-    }
-
-    private void Start()
-    {       
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            int index = Random.Range(0, _images.Count);
-            KeyValuePair<string, Sprite> pair = _images.ElementAt(index);
-
-            _spriteRenderer.sprite = pair.Value;
-            Debug.Log(pair.Key);
+            _cardsData.Add(_data[i].ToDictionary());
         }
     }
 }

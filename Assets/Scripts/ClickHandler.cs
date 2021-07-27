@@ -1,21 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 
-public class ClickHandler : MonoBehaviour, IPointerClickHandler
+public class ClickHandler : MonoBehaviour
 {
     private TaskChecker _checker;
-    public void OnPointerClick(PointerEventData eventData)
-    {
-       Cell cell = eventData.pointerCurrentRaycast.gameObject.GetComponent<Cell>();
-
-        _checker.CheckAnswer(cell.Name, cell);
-
-    }
 
     private void Awake()
     {
         _checker = FindObjectOfType<TaskChecker>();
+    }
+
+    private void OnMouseDown()
+    {
+        Cell cell = gameObject.GetComponent<Cell>();
+        _checker.CheckAnswer(cell.Name, cell);
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(TaskGenerator))]
 public class TaskChecker : MonoBehaviour
@@ -20,19 +18,17 @@ public class TaskChecker : MonoBehaviour
 
         if (answer == _curretTask)
         {
-            cell.SequenceEnded += OnSequenceEnded;
-            cell.Correct();
-           
-           
+            cell.Visualizer.SequenceEnded += OnSequenceEnded;
+            cell.Visualizer.Correct();       
         }
         else
         {
-            cell.Incorrect();
+            cell.Visualizer.Incorrect();
             return;
         }
     }
 
-    private void OnSequenceEnded(Cell cell)
+    private void OnSequenceEnded(CellVisualizer cell)
     {
         _spawner.ChangeLevel();
         cell.SequenceEnded -= OnSequenceEnded;

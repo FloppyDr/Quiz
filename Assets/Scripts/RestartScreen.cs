@@ -1,17 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 
-public class RestartScreen : MonoBehaviour
+public class RestartScreen : Fade
 {
     [SerializeField] private Spawner _spawner;
     [SerializeField] private CanvasGroup _canvasGroup;
-
-    private int _minAlpha = 0;
-    private int _maxAlpha = 1;
-
-    public event UnityAction FadeEnded;
 
     private void OnEnable()
     {
@@ -30,25 +22,19 @@ public class RestartScreen : MonoBehaviour
 
     private void OnLevelsEnded()
     {
-        StartCoroutine(ChangeAlpha(_maxAlpha));
-        _canvasGroup.blocksRaycasts = true;
-        _canvasGroup.interactable = true;
+        StartCoroutine(ChangeAlpha(_maxAlpha,_canvasGroup));
+        ChangeCanvasGroupState();
     }
 
-    private IEnumerator ChangeAlpha(int targetAlpha)
+    private void ChangeCanvasGroupState()
     {
-        while (_canvasGroup.alpha != targetAlpha)
-        {
-            _canvasGroup.alpha = Mathf.MoveTowards(_canvasGroup.alpha, targetAlpha, Time.deltaTime);
-            yield return null;
-        }
-        FadeEnded?.Invoke();
+        _canvasGroup.blocksRaycasts = !_canvasGroup.blocksRaycasts;
+        _canvasGroup.interactable = !_canvasGroup.interactable;
     }
 
     public void Reset()
     {
         _canvasGroup.alpha = _minAlpha;
-        _canvasGroup.blocksRaycasts = false;
-        _canvasGroup.interactable = false;
-    }
+        ChangeCanvasGroupState();
+    } 
 }
